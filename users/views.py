@@ -52,3 +52,18 @@ class LoginView(APIView):
         }
         
         return response
+    
+class UserView(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+        
+        if not token:
+            raise exceptions.AuthenticationFailed('Unduthenticated')
+        
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        
+        user = User.objects.filter(id=payload['id']).first()
+        
+        serializer = UserSerializer(user)
+        
+        return Response(serializer.data)
