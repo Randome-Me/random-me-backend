@@ -11,6 +11,7 @@ mongoengine = "*"
 djongo = "*"
 djangorestframework = "*"
 pyjwt = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
