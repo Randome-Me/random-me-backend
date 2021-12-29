@@ -23,4 +23,32 @@ class RegisterView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data['username']
+        password = request.data['password']
+        
+        user = User.objects.filter(username=username).first()
+        
+        if user is None:
+            raise exceptions.AuthenticationFailed('User Not Found')
+        
+        if user.check_password(password):
+            raise exceptions.AuthenticationFailed('Incorrect Password')
+        
+        payload = { 
+            "id": user.id, 
+        }
+        
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+        
+        response = Response()
+        
+        response.set_cookie(key='jwt', value=token, httponly=True)
+        response.data = {
+            'jwt': token
+        }
+        
+        return response
