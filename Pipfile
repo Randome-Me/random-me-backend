@@ -10,6 +10,7 @@ dnspython = "*"
 mongoengine = "*"
 djongo = "*"
 djangorestframework = "*"
+pyjwt = "*"
 
 [dev-packages]
 
