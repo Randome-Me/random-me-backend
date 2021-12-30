@@ -87,12 +87,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': os.getenv('MONGODB_NAME'),
-        'CLIENT': {
-            'host': os.getenv('MONGODB_URI'),
-            'authMechanism': 'SCRAM-SHA-1',
-        }
+        'HOST': os.getenv('MONGODB_URI'),
     }
 }
+
+print(os.getenv('MONGODB_URI'))
 
 
 # Password validation
