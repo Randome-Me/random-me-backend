@@ -84,9 +84,9 @@ WSGI_APPLICATION = 'random_me.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': os.environ['S3_MONGODB_NAME'],
+        'NAME': os.environ['MONGODB_NAME'],
         'CLIENT':{
-            'host': os.environ['S3_MONGODB_HOST'],
+            'host': os.environ['MONGODB_HOST'],
             'authMechanism': 'SCRAM-SHA-1',
         } 
     }
