@@ -9,6 +9,9 @@ class Option(models.Model):
     
     class Meta:
         abstract = True
+        
+    def __str__(self):
+        return self.name
     
 class Topic(models.Model):
     name = models.CharField(max_length=255)
@@ -21,6 +24,9 @@ class Topic(models.Model):
     
     class Meta:
         abstract = True
+        
+    def __str__(self):
+        return self.name
     
 class AppUser(models.Model):
     username = models.CharField(max_length=255, unique=True)
@@ -29,3 +35,6 @@ class AppUser(models.Model):
         model_container=Topic,
         blank=True
     )
+    
+    def __str__(self):
+        return self.username
