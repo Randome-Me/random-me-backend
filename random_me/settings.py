@@ -13,9 +13,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import django_heroku
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -86,10 +83,10 @@ WSGI_APPLICATION = 'random_me.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': os.getenv('MONGODB_NAME'),
-        'HOST': os.getenv('MONGODB_URI'),
-        'USER': os.getenv('MONGODB_USERNAME'),
-        'PASSWORD': os.getenv('MONGODB_PASSWORD'),
+        'NAME': str(os.environ.get('MONGODB_NAME')),
+        'HOST': str(os.environ.get('MONGODB_URI')),
+        'USER': str(os.environ.get('MONGODB_USERNAME')),
+        'PASSWORD': str(os.environ.get('MONGODB_PASSWORD')),
     }
 }
 
