@@ -80,7 +80,11 @@ WSGI_APPLICATION = 'random_me.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'Random_Me_Local',
+        'NAME': 'Random_Me',
+        'ENFORCE_SCHEMA': False,
+        'HOST': 'mongodb+srv://randomme:rdm123@cluster0.4w1hf.mongodb.net/Random_Me?retryWrites=true&w=majority',
+        'USER': 'randomme',
+        'PASSWORD': 'rdm123',
     }
 }
 
