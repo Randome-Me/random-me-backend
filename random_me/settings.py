@@ -88,6 +88,8 @@ DATABASES = {
         'ENGINE': 'djongo',
         'NAME': os.getenv('MONGODB_NAME'),
         'HOST': os.getenv('MONGODB_URI'),
+        'USER': os.getenv('MONGODB_USERNAME'),
+        'PASSWORD': os.getenv('MONGODB_PASSWORD'),
     }
 }
 
