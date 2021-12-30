@@ -24,10 +24,10 @@ class RegisterView(APIView):
                 'message': 'Passwords do not match.'
             }, status=status.HTTP_400_BAD_REQUEST)
             
-        appuser = AppUser(username=request.data['username'], selectedTopicId="", topic=[])
+        appuser = AppUser(username=request.data['username'], selectedTopicId="")
         
-        serializer.save()
         appuser.save()
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class LoginView(APIView):
