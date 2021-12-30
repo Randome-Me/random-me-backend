@@ -1,10 +1,9 @@
 from pymongo import MongoClient
-import os
 
 def get_db_handle(db_name, host, port, username, password):
 
  client = MongoClient(host=host,
-                      port=int(port) | os.environ.get('DATABASE_PORT'),
+                      port=int(port),
                       username=username,
                       password=password
                      )
