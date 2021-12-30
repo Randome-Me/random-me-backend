@@ -5,6 +5,8 @@ from .serializers import UserSerializer
 from rest_framework.parsers import JSONParser
 from django.contrib.auth.models import User
 from rest_framework import exceptions
+from topics.models import AppUser
+from topics.serializers import AppUserSerializer
 import jwt, datetime
 
 # Create your views here.
@@ -21,8 +23,12 @@ class RegisterView(APIView):
             return Response({
                 'message': 'Passwords do not match.'
             }, status=status.HTTP_400_BAD_REQUEST)
+            
+        appuser = AppUser(username=request.data['username'], selectedTopicId="", topic=[])
         
         serializer.save()
+        appuser.save()
+        appuserserializer = AppUserSerializer(appuser)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class LoginView(APIView):
@@ -64,9 +70,11 @@ class UserView(APIView):
         
         user = User.objects.filter(id=payload['id']).first()
         
-        serializer = UserSerializer(user)
+        appuser = AppUser.objects.filter(username=user.username).first()
         
-        return Response(serializer.data)
+        appuserserializser = AppUserSerializer(appuser)
+        
+        return Response(appuserserializser.data)
     
 class LogoutView(APIView):
     def post(self, request):
