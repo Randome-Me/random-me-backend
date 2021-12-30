@@ -86,18 +86,11 @@ WSGI_APPLICATION = 'random_me.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        # 'NAME': 'Random_Me_Local',
-        'NAME': os.getenv('DATABASE_NAME'),
-        'ENFORCE_SCHEMA': False,
-        # 'HOST': os.getenv('DATABASE_HOST'),
-        # 'USER': os.getenv('DATABASE_USERNAME'),
-        # 'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        # 'CLIENT': {
-        #     'host': os.getenv('DATABASE_HOST'),
-        #     'port': 27017,
-        #     'username': os.getenv('DATABASE_USERNAME'),
-        #     'password': os.getenv('DATABASE_USERNAME'),
-        # }
+        'NAME': os.getenv('MONGODB_NAME'),
+        'CLIENT': {
+            'host': os.getenv('MONGODB_URI'),
+            'authMechanism': 'SCRAM-SHA-1',
+        }
     }
 }
 
