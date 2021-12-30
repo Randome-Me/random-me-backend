@@ -28,7 +28,6 @@ class RegisterView(APIView):
         
         serializer.save()
         appuser.save()
-        appuserserializer = AppUserSerializer(appuser)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class LoginView(APIView):
