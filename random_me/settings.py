@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import django_heroku
 import os
-from boto.s3.connection import S3Connection
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -84,11 +86,8 @@ WSGI_APPLICATION = 'random_me.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': os.environ['MONGODB_NAME'],
-        'CLIENT':{
-            'host': os.environ['MONGODB_HOST'],
-            'authMechanism': 'SCRAM-SHA-1',
-        } 
+        'NAME': os.getenv('MONGODB_NAME'),
+        'HOST': os.getenv('MONGODB_URI'),
     }
 }
 
