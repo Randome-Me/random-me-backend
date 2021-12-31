@@ -15,7 +15,7 @@ class Option(models.Model):
     
 class Topic(models.Model):
     name = models.CharField(max_length=255)
-    policy = models.CharField(max_length=255)
+    policy = models.PositiveIntegerField()
     t = models.IntegerField()
     option = models.ArrayField(
         model_container=Option,
