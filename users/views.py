@@ -30,9 +30,16 @@ class RegisterView(APIView):
         appuser.topic=[]
         
         appuser.save()
-        appuserserializer = AppUserSerializer(appuser)
         serializer.save()
-        return Response(appuserserializer.data, status=status.HTTP_201_CREATED)
+        
+        response = Response()
+        
+        response.status = status.HTTP_201_CREATED
+        response.data = {
+            'message': 'success'
+        }
+        
+        return response
 
 class LoginView(APIView):
     def post(self, request):
