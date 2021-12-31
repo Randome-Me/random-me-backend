@@ -14,6 +14,9 @@ from pathlib import Path
 import django_heroku
 import os
 from dotenv import load_dotenv
+from pymongo import MongoClient
+
+MongoClient.HOST = os.getenv('MONGODB_URI')
 
 load_dotenv()
 
@@ -87,9 +90,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': os.getenv('MONGODB_NAME'),
-        'HOST': os.getenv('MONGODB_URI'),
-        'USER': os.getenv('MONGODB_USERNAME'),
-        'PASSWORD': os.getenv('MONGODB_PASSWORD'),
+        # 'HOST': os.getenv('MONGODB_URI'),
+        # 'USER': os.getenv('MONGODB_USERNAME'),
+        # 'PASSWORD': os.getenv('MONGODB_PASSWORD'),
     }
 }
 
