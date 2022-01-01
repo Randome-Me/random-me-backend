@@ -2,12 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
-from rest_framework.parsers import JSONParser
 from django.contrib.auth.models import User
 from rest_framework import exceptions
 from topics.models import AppUser
 from topics.serializers import AppUserSerializer
-import jwt, datetime
+import jwt
 
 # Create your views here.
 class RegisterView(APIView):
@@ -19,7 +18,7 @@ class RegisterView(APIView):
         password = request.data['password']
         confirmPassword = request.data['confirmPassword']
         
-        if  password != confirmPassword:
+        if password != confirmPassword:
             return Response({
                 'message': 'Passwords do not match.'
             }, status=status.HTTP_400_BAD_REQUEST)
