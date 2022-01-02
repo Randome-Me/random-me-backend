@@ -25,8 +25,8 @@ class RegisterView(APIView):
             
         appuser = AppUser()
         appuser.username = request.data['username']
-        appuser.selectedTopicId=""
-        appuser.topic=[]
+        appuser.selectedTopicId=None
+        appuser.topics=[]
         
         appuser.save()
         serializer.save()
@@ -45,7 +45,7 @@ class LoginView(APIView):
         username = request.data['username']
         password = request.data['password']
         
-        user = User.objects.filter(username=username).first()
+        user = User.objects.get(username=username)
         
         if user is None:
             raise exceptions.AuthenticationFailed('User Not Found')
@@ -77,14 +77,18 @@ class UserView(APIView):
         
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         
-        user = User.objects.filter(id=payload['id']).first()
+        user = User.objects.get(id=payload['id'])
         
-        appuser = AppUser.objects.filter(username=user.username).first()
+        appuser = AppUser.objects.get(username=user.username)
         
-        appuserserializer = AppUserSerializer(appuser)
+        appuserserializer = AppUserSerializer(appuser.username, appuser.selectedTopicId, appuser.topics)
         
-        print(AppUser.objects.all())
+        # print(literal_eval(appuserserializer.data['topics']))
         
+        # appuserserializer.data['topics'] = literal_eval(appuserserializer.data['topics'])
+        
+        # return Response()
+
         return Response(appuserserializer.data)
     
 class LogoutView(APIView):
