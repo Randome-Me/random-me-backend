@@ -2,12 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
-from rest_framework.parsers import JSONParser
 from django.contrib.auth.models import User
 from rest_framework import exceptions
 from topics.models import AppUser
 from topics.serializers import AppUserSerializer
-import jwt, datetime
+import jwt
 
 # Create your views here.
 class RegisterView(APIView):
@@ -19,24 +18,34 @@ class RegisterView(APIView):
         password = request.data['password']
         confirmPassword = request.data['confirmPassword']
         
-        if  password != confirmPassword:
+        if password != confirmPassword:
             return Response({
                 'message': 'Passwords do not match.'
             }, status=status.HTTP_400_BAD_REQUEST)
             
-        appuser = AppUser(username=request.data['username'], selectedTopicId="", topic=[])
+        appuser = AppUser()
+        appuser.username = request.data['username']
+        appuser.selectedTopicId=None
+        appuser.topics=[]
         
-        serializer.save()
         appuser.save()
-        appuserserializer = AppUserSerializer(appuser)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer.save()
+        
+        response = Response()
+        
+        response.status = status.HTTP_201_CREATED
+        response.data = {
+            'message': 'success'
+        }
+        
+        return response
 
 class LoginView(APIView):
     def post(self, request):
         username = request.data['username']
         password = request.data['password']
         
-        user = User.objects.filter(username=username).first()
+        user = User.objects.get(username=username)
         
         if user is None:
             raise exceptions.AuthenticationFailed('User Not Found')
@@ -68,13 +77,11 @@ class UserView(APIView):
         
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         
-        user = User.objects.filter(id=payload['id']).first()
+        user = User.objects.get(id=payload['id'])
         
-        appuser = AppUser.objects.filter(username=user.username).first()
-        
-        appuserserializser = AppUserSerializer(appuser)
-        
-        return Response(appuserserializser.data)
+        appuser = AppUser.objects.get(username=user.username)
+        appuserserializer = AppUserSerializer(appuser.username, appuser.selectedTopicId, appuser.topics)
+        return Response(appuserserializer.data)
     
 class LogoutView(APIView):
     def post(self, request):

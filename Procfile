@@ -1,1 +1,1 @@
-web: waitress-serve --listen=*:8000 gettingstarted.wsgi:application
+web: gunicorn random_me.wsgi

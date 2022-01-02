@@ -11,7 +11,14 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import django_heroku
 import os
+from dotenv import load_dotenv
+from pymongo import MongoClient
+
+MongoClient.HOST = os.getenv('MONGODB_URI')
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -82,12 +89,10 @@ WSGI_APPLICATION = 'random_me.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        # 'NAME': 'Random_Me_Local',
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'ENFORCE_SCHEMA': False,
-        'HOST': os.environ.get('DATABASE_HOST'),
-        'USER': os.environ.get('DATABASE_USERNAME'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'NAME': os.getenv('MONGODB_NAME'),
+        # 'HOST': os.getenv('MONGODB_URI'),
+        # 'USER': os.getenv('MONGODB_USERNAME'),
+        # 'PASSWORD': os.getenv('MONGODB_PASSWORD'),
     }
 }
 
@@ -126,7 +131,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'staticfiles/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -135,3 +142,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWS_CREDENTIALS = True
+
+django_heroku.settings(locals())
