@@ -1,7 +1,9 @@
 from djongo import models
+import uuid
 
 # Create your models here.  
 class Option(models.Model):
+    _id = models.CharField(max_length=36, default=uuid.uuid4, unique=True)
     name = models.CharField(max_length=255)
     bias = models.PositiveIntegerField()
     pulls = models.PositiveIntegerField()
@@ -14,10 +16,11 @@ class Option(models.Model):
         return self.name
     
 class Topic(models.Model):
+    _id = models.CharField(max_length=36, default=uuid.uuid4, unique=True)
     name = models.CharField(max_length=255)
     policy = models.PositiveIntegerField()
     t = models.IntegerField()
-    option = models.ArrayField(
+    options = models.ArrayField(
         model_container=Option,
         blank=True
     )
@@ -30,8 +33,8 @@ class Topic(models.Model):
     
 class AppUser(models.Model):
     username = models.CharField(max_length=255, unique=True)
-    selectedTopicId = models.CharField(max_length=255)
-    topic = models.ArrayField(
+    selectedTopicId = models.CharField(max_length=255, null=True)
+    topics = models.ArrayField(
         model_container=Topic,
         blank=True
     )

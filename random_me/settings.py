@@ -16,7 +16,7 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-MongoClient.HOST = os.getenv('MONGODB_URI')
+#MongoClient.HOST = os.getenv('MONGODB_URI')
 
 load_dotenv()
 
@@ -41,6 +41,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_mongoengine',
     'corsheaders',
     'users',
     'topics',
