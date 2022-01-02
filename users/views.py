@@ -80,15 +80,7 @@ class UserView(APIView):
         user = User.objects.get(id=payload['id'])
         
         appuser = AppUser.objects.get(username=user.username)
-        
         appuserserializer = AppUserSerializer(appuser.username, appuser.selectedTopicId, appuser.topics)
-        
-        # print(literal_eval(appuserserializer.data['topics']))
-        
-        # appuserserializer.data['topics'] = literal_eval(appuserserializer.data['topics'])
-        
-        # return Response()
-
         return Response(appuserserializer.data)
     
 class LogoutView(APIView):
