@@ -16,7 +16,7 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-#MongoClient.HOST = os.getenv('MONGODB_URI')
+MongoClient.HOST = os.getenv('MONGODB_URI')
 
 load_dotenv()
 
@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a2)b9=c!_4+inu)s8wij$^%wo49-l^a^!-yyr$7jw5s^ol+n+g'
+SECRET_KEY = os.getenv('DJANGO_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
