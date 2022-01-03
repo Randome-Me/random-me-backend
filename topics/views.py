@@ -72,7 +72,10 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         appuser.save(update_fields=['topics'])
         
         response = Response()
-        response.status = status.HTTP_204_NO_CONTENT
+        response.status = status.HTTP_201_CREATED
+        response.data = {
+            '_id': _id
+        }
         return response
     
     # Select this topicId
@@ -187,10 +190,7 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         appuser.save(update_fields=['topics'])
         
         response = Response()
-        response.status = status.HTTP_201_CREATED
-        response.data = {
-            '_id': _id
-        }
+        response.status = status.HTTP_204_NO_CONTENT
         return response
         
     # {field:string, value:string}, Change topic name/policy
