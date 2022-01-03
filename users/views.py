@@ -80,7 +80,7 @@ class UserView(APIView):
         user = User.objects.get(id=payload['id'])
         
         appuser = AppUser.objects.get(username=user.username)
-        appuserserializer = AppUserSerializer(appuser._id, appuser.username, appuser.selectedTopicId, appuser.topics)
+        appuserserializer = AppUserSerializer(appuser._id, appuser.username, appuser.language, appuser.selectedTopicId, appuser.topics)
         return Response(appuserserializer.data)
     
 class LogoutView(APIView):
