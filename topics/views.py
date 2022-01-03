@@ -21,8 +21,6 @@ class AddTopicView(APIView):
         user = User.objects.get(id=payload['id'])
         
         appuser = AppUser.objects.get(username=user.username)
-        
-        print(appuser)
 
         appuser.topics.append({"_id":uuid.uuid4(),"name":request.data['name'], "policy":5, 't':0, "options":[]})
         
