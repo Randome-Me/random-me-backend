@@ -1,9 +1,14 @@
 from rest_framework.views import APIView
+from rest_framework import generics
+from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import exceptions
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from .models import AppUser
+from .customMixins import MultipleFieldLookupMixin
 import jwt, uuid
 
 # Create your views here.
@@ -24,7 +29,7 @@ class AddTopicView(APIView):
 
         appuser.topics.append({"_id":uuid.uuid4(),"name":request.data['name'], "policy":5, 't':0, "options":[]})
         
-        appuser.save()
+        appuser.save(update_fields=['topics'])
         
         response = Response()
         
@@ -33,6 +38,16 @@ class AddTopicView(APIView):
             'message': 'success'
         }
         return response
+
+class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
+    
+    lookup_field = 'topicId'
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, topicId=None, optionId=None):
+        # {name:string}
+        pass
 
 class AddOptionView(APIView):
     #/options/add
