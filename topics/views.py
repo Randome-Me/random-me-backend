@@ -183,9 +183,9 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 for j in range(len(appuser.topics[i]['options'])):
                     if appuser.topics[i]['options'][j]['_id'] == optionId :
                         foundOption = True
-                        appuser.topics[i]['t'] = appuser.topics[i]['t'] + 1
-                        appuser.topics[i]['options'][j]['pulls'] = appuser.topics[i]['options'][j]['pulls']+1
-                        appuser.topics[i]['options'][j]['reward'] = appuser.topics[i]['options'][j]['reward']+request.data['reward']
+                        appuser.topics[i]['t'] += 1
+                        appuser.topics[i]['options'][j]['pulls'] += 1
+                        appuser.topics[i]['options'][j]['reward'] += request.data['reward']
                         break
                 break
         
@@ -216,12 +216,6 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         if request.data['field'] is None or request.data['field'] not in ['name', 'bias']:
             return Response({"message":"Incorrect 'field' value"}, status=status.HTTP_400_BAD_REQUEST)
         
-        for i in range(len(appuser.topics)):
-            if appuser.topics[i]['_id'] == topicId:
-                found = True
-                appuser.topics[i][request.data['field']] = request.data['value']
-                break
-        
         foundTopic = False
         foundOption = False
         
@@ -248,7 +242,7 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         return response
     
     # Delete this topic
-    def delete(self, request, topicId):
+    def delete(self, request, topicId, optionId):
         token = request.COOKIES.get('jwt')
         if token is None:
             return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
@@ -259,45 +253,28 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         
         appuser = AppUser.objects.get(username=user.username)
         
-        found = False
+        foundTopic = False
+        foundOption = False
+        
         for i in range(len(appuser.topics)):
             if appuser.topics[i]['_id'] == topicId:
-                found = True
-                del appuser.topics[i]
+                foundTopic = True
+                for j in range(len(appuser.topics[i]['options'])):
+                    if appuser.topics[i]['options'][j]['_id'] == optionId :
+                        foundOption = True
+                        appuser.topics[i]['t'] -= appuser.topics[i]['options'][j]['pulls']
+                        del appuser.topics[i]['options'][j]
+                        break
                 break
         
-        if not found:
-            return Response({"message":"Topic not found"}, status=status.HTTP_404_NOT_FOUND)
+        if not foundTopic:
+            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
+        
+        if not foundOption:
+            return Response({"message":"invalid optionId"}, status=status.HTTP_404_NOT_FOUND)
         
         appuser.save(update_fields=['topics'])
         
         response = Response()
-        response.status = status.HTTP_200_OK
-        response.data = {
-            'message': 'success'
-        }
+        response.status = status.HTTP_204_NO_CONTENT
         return response
-class SetOptionNameView(APIView):
-    #/options/name
-    def post(self, request):
-        #optionId + name
-        pass
-    
-class SetBiasView(APIView):
-    #/topics/bias
-    def post(self, request):
-        #optionId + bias
-        pass
-    
-class PullArmView(APIView):
-    #/topics/pull
-    def post(self, request):
-        #optionId + reward
-        pass
-
-class RemoveOptionView(APIView):
-    #/options/remove
-    def post(self, request):
-        #optionId
-        pass
-    
