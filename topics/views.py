@@ -25,8 +25,10 @@ class AddTopicView(APIView):
             return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
         
         appuser = AppUser.objects.get(username=user.username)
+        
+        _id = uuid.uuid4()
 
-        appuser.topics.append({"_id":uuid.uuid4(),"name":request.data['name'], "policy":5, "t":0, "options":[]})
+        appuser.topics.append({"_id":_id,"name":request.data['name'], "policy":5, "t":0, "options":[]})
         
         appuser.save(update_fields=['topics'])
         
@@ -34,7 +36,7 @@ class AddTopicView(APIView):
         
         response.status = status.HTTP_201_CREATED
         response.data = {
-            'message': 'success'
+            '_id': _id
         }
         return response
 
@@ -56,10 +58,12 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         appuser = AppUser.objects.get(username=user.username)
         
         found = False
+        _id = uuid.uuid4()
+        
         for i in range(len(appuser.topics)):
             if appuser.topics[i]['_id'] == topicId:
                 found = True
-                appuser.topics[i]['options'].append({"_id":uuid.uuid4(),"name":request.data['name'], "bias":request.data['bias'], "pulls":0, "reward":0})
+                appuser.topics[i]['options'].append({"_id":_id, "name":request.data['name'], "bias":request.data['bias'], "pulls":0, "reward":0})
                 break
         
         if not found:
@@ -70,7 +74,7 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         response = Response()
         response.status = status.HTTP_201_CREATED
         response.data = {
-            'message': 'success'
+            '_id': _id
         }
         return response
     
@@ -160,13 +164,7 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         }
         return response
         
-    
-class SetTopicNameView(APIView):
-    #/topics/name
-    def post(self, request):
-        #topicId + name
-        pass
-    
+
 class SetOptionNameView(APIView):
     #/options/name
     def post(self, request):
@@ -177,12 +175,6 @@ class SetBiasView(APIView):
     #/topics/bias
     def post(self, request):
         #optionId + bias
-        pass
-    
-class ChangePolicyView(APIView):
-    #/topics/policy
-    def post(self, request):
-        #topicId + policy
         pass
     
 class PullArmView(APIView):
@@ -197,8 +189,3 @@ class RemoveOptionView(APIView):
         #optionId
         pass
     
-class RemoveTopicView(APIView):
-    #/topics/remove
-    def post(self, request):
-        #topicId
-        pass
