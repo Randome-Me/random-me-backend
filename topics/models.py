@@ -32,6 +32,7 @@ class Topic(models.Model):
         return self.name
     
 class AppUser(models.Model):
+    _id = models.CharField(max_length=36, default=uuid.uuid4, unique=True)
     username = models.CharField(max_length=255, unique=True)
     selectedTopicId = models.CharField(max_length=255, null=True)
     topics = models.ArrayField(

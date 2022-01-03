@@ -7,11 +7,13 @@ import json
 class OptionSerializer(serializers.ModelSerializer):
     def __init__(self, dict):
         self.data = {
+            "_id": None,
             "name": None,
             "bias": None,
             "pulls": None,
             "reward": None
         }
+        self.data['_id'] = dict['_id']
         self.data['name'] = dict['name']
         self.data['bias'] = dict['bias']
         self.data['pulls'] = dict['pulls']
@@ -20,11 +22,13 @@ class OptionSerializer(serializers.ModelSerializer):
 class TopicSerializer():
     def __init__(self, dict):
         self.data = {
+            "_id": None,
             "name": None,
             "policy": None,
             "t": None,
             "options": []
         }
+        self.data['_id'] = dict['_id']
         self.data['name'] = dict['name']
         self.data['policy'] = dict['policy']
         self.data['t'] = dict['t']
@@ -32,12 +36,14 @@ class TopicSerializer():
             self.data['options'] = [OptionSerializer(dict['options'][i]).data for i in range(len(dict['options']))] 
 
 class AppUserSerializer():    
-    def __init__(self, username, selectedTopicId, topics):
+    def __init__(self, _id, username, selectedTopicId, topics):
         self.data = {
+            "_id": None,
             "username": None,
             "selectedTopicId": None,
             "topics": []
         }
+        self.data['_id']  = str(_id)
         self.data['username']  = username
         self.data['selectedTopicId']  = selectedTopicId
         if len(topics) > 0:
