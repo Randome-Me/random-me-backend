@@ -45,7 +45,7 @@ class LoginView(APIView):
         username = request.data['username']
         password = request.data['password']
         
-        user = User.objects.find(username=username).first()
+        user = User.objects.filter(username=username).first()
         
         if user is None:
             raise exceptions.AuthenticationFailed('User Not Found')
