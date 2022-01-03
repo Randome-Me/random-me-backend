@@ -15,7 +15,8 @@ import jwt, uuid
 class AddTopicView(APIView):    
     # /topics/
     
-    def post(self, request):    # {name:string}, Add topic
+    # {name:string}, Add topic
+    def post(self, request):    
         token = request.COOKIES.get('jwt')
         if token is None:
             return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
@@ -38,6 +39,25 @@ class AddTopicView(APIView):
         response.data = {
             '_id': _id
         }
+        return response
+    
+    # {_id:string}, Select this topicId
+    def patch(self, request):
+        token = request.COOKIES.get('jwt')
+        if token is None:
+            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        user = User.objects.filter(id=payload['id']).first()
+        if user is None:
+            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        appuser = AppUser.objects.get(username=user.username)
+        
+        appuser.selectedTopicId = request.data['_id']
+        appuser.save(update_fields=['selectedTopicId'])
+        
+        response = Response()
+        response.status = status.HTTP_204_NO_CONTENT
         return response
 
 class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
@@ -76,24 +96,6 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         response.data = {
             '_id': _id
         }
-        return response
-    
-    # Select this topicId
-    def put(self, request, topicId):
-        token = request.COOKIES.get('jwt')
-        if token is None:
-            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
-        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-        user = User.objects.filter(id=payload['id']).first()
-        if user is None:
-            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
-        appuser = AppUser.objects.get(username=user.username)
-        
-        appuser.selectedTopicId = topicId
-        appuser.save(update_fields=['selectedTopicId'])
-        
-        response = Response()
-        response.status = status.HTTP_204_NO_CONTENT
         return response
         
     # {field:string, value:string}, Change topic name/policy
