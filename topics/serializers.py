@@ -4,7 +4,7 @@ from rest_framework import serializers
 from .models import AppUser, Topic, Option
 import json
 
-class OptionSerializer(serializers.ModelSerializer):
+class OptionSerializer():
     def __init__(self, dict):
         self.data = {
             "_id": None,
