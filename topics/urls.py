@@ -3,5 +3,6 @@ from .views import *
 
 urlpatterns = [
     path('', AddTopicView.as_view()),
-    path('<str:topicId>/', TopicsGenericAPIView.as_view())
+    path('<str:topicId>/', TopicsGenericAPIView.as_view()),
+    path('<str:topicId>/<str:optionId>/', OptionGenericAPIView.as_view())
 ]

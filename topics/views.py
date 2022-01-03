@@ -77,17 +77,17 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         
         appuser = AppUser.objects.get(username=user.username)
         
-        found = False
+        foundTopic = False
         _id = uuid.uuid4()
         
         for i in range(len(appuser.topics)):
             if appuser.topics[i]['_id'] == topicId:
-                found = True
+                foundTopic = True
                 appuser.topics[i]['options'].append({"_id":_id, "name":request.data['name'], "bias":request.data['bias'], "pulls":0, "reward":0})
                 break
         
-        if not found:
-            return Response({"message":"Topic not found"}, status=status.HTTP_404_NOT_FOUND)
+        if not foundTopic:
+            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
         
         appuser.save(update_fields=['topics'])
         
@@ -113,15 +113,15 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         if request.data['field'] is None or request.data['field'] not in ['name', 'policy']:
             return Response({"message":"Incorrect 'field' value"}, status=status.HTTP_400_BAD_REQUEST)
         
-        found = False
+        foundTopic = False
         for i in range(len(appuser.topics)):
             if appuser.topics[i]['_id'] == topicId:
-                found = True
+                foundTopic = True
                 appuser.topics[i][request.data['field']] = request.data['value']
                 break
         
-        if not found:
-            return Response({"message":"Topic not found"}, status=status.HTTP_404_NOT_FOUND)
+        if not foundTopic:
+            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
         
         appuser.save(update_fields=['topics'])
         
@@ -141,15 +141,15 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         
         appuser = AppUser.objects.get(username=user.username)
         
-        found = False
+        foundTopic = False
         for i in range(len(appuser.topics)):
             if appuser.topics[i]['_id'] == topicId:
-                found = True
+                foundTopic = True
                 del appuser.topics[i]
                 break
         
-        if not found:
-            return Response({"message":"Topic not found"}, status=status.HTTP_404_NOT_FOUND)
+        if not foundTopic:
+            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
         
         appuser.save(update_fields=['topics'])
         
@@ -158,11 +158,11 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         return response
         
 class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
-    # <str:topicId>/<str:optionId>
+    # <str:topicId>/<str:optionId>/
     
     lookup_field = ('topicId', 'optionId')
     
-    # {name:string, bias:int}, Add option to topic
+    # {reward:int}, Add option to topic
     def post(self, request, topicId, optionId):
         token = request.COOKIES.get('jwt')
         if token is None:
@@ -174,20 +174,26 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         
         appuser = AppUser.objects.get(username=user.username)
         
-        found = False
-        _id = uuid.uuid4()
+        foundTopic = False
+        foundOption = False
         
         for i in range(len(appuser.topics)):
             if appuser.topics[i]['_id'] == topicId:
+                foundTopic = True
                 for j in range(len(appuser.topics[i]['options'])):
-                    found = True
-                    appuser.topics[i]['options'][j]['pulls'] = appuser.topics[i]['options'][j]['pulls']+1
-                    appuser.topics[i]['options'][j]['reward'] = appuser.topics[i]['options'][j]['reward']+request.data['reward']
-                    break
+                    if appuser.topics[i]['options'][j]['_id'] == optionId :
+                        foundOption = True
+                        appuser.topics[i]['t'] = appuser.topics[i]['t'] + 1
+                        appuser.topics[i]['options'][j]['pulls'] = appuser.topics[i]['options'][j]['pulls']+1
+                        appuser.topics[i]['options'][j]['reward'] = appuser.topics[i]['options'][j]['reward']+request.data['reward']
+                        break
                 break
         
-        if not found:
-            return Response({"message":"Option not found"}, status=status.HTTP_404_NOT_FOUND)
+        if not foundTopic:
+            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
+        
+        if not foundOption:
+            return Response({"message":"invalid optionId"}, status=status.HTTP_404_NOT_FOUND)
         
         appuser.save(update_fields=['topics'])
         
@@ -195,8 +201,8 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         response.status = status.HTTP_204_NO_CONTENT
         return response
         
-    # {field:string, value:string}, Change topic name/policy
-    def patch(self, request, topicId):
+    # {field:string, value:string}, Change topic name/bias
+    def patch(self, request, topicId, optionId):
         token = request.COOKIES.get('jwt')
         if token is None:
             return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
@@ -207,26 +213,38 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         
         appuser = AppUser.objects.get(username=user.username)
         
-        if request.data['field'] is None or request.data['field'] not in ['name', 'policy']:
+        if request.data['field'] is None or request.data['field'] not in ['name', 'bias']:
             return Response({"message":"Incorrect 'field' value"}, status=status.HTTP_400_BAD_REQUEST)
         
-        found = False
         for i in range(len(appuser.topics)):
             if appuser.topics[i]['_id'] == topicId:
                 found = True
                 appuser.topics[i][request.data['field']] = request.data['value']
                 break
         
-        if not found:
-            return Response({"message":"Topic not found"}, status=status.HTTP_404_NOT_FOUND)
+        foundTopic = False
+        foundOption = False
+        
+        for i in range(len(appuser.topics)):
+            if appuser.topics[i]['_id'] == topicId:
+                foundTopic = True
+                for j in range(len(appuser.topics[i]['options'])):
+                    if appuser.topics[i]['options'][j]['_id'] == optionId :
+                        foundOption = True
+                        appuser.topics[i]['options'][j][request.data['field']] = request.data['value']
+                        break
+                break
+        
+        if not foundTopic:
+            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
+        
+        if not foundOption:
+            return Response({"message":"invalid optionId"}, status=status.HTTP_404_NOT_FOUND)
         
         appuser.save(update_fields=['topics'])
         
         response = Response()
-        response.status = status.HTTP_200_OK
-        response.data = {
-            'message': 'success'
-        }
+        response.status = status.HTTP_204_NO_CONTENT
         return response
     
     # Delete this topic
