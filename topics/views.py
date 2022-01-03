@@ -17,14 +17,10 @@ class AddTopicView(APIView):
     
     def post(self, request):    # {name:string}, Add topic
         token = request.COOKIES.get('jwt')
-        
         if token is None:
             return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
-        
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-        
         user = User.objects.filter(id=payload['id']).first()
-        
         if user is None:
             return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
         
@@ -47,20 +43,24 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
     
     lookup_field = 'topicId'
     
-    def post(self, request, topicId):   # {name:string, bias:int}, Add option to topic
+    # {name:string, bias:int}, Add option to topic
+    def post(self, request, topicId):
         token = request.COOKIES.get('jwt')
+        if token is None:
+            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-        
-        user = User.objects.get(id=payload['id'])
+        user = User.objects.filter(id=payload['id']).first()
+        if user is None:
+            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
         
         appuser = AppUser.objects.get(username=user.username)
         
         found = False
-        
         for i in range(len(appuser.topics)):
             if appuser.topics[i]['_id'] == topicId:
                 found = True
                 appuser.topics[i]['options'].append({"_id":uuid.uuid4(),"name":request.data['name'], "bias":request.data['bias'], "pulls":0, "reward":0})
+                break
         
         if not found:
             return Response({"message":"Topic not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -68,18 +68,98 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         appuser.save(update_fields=['topics'])
         
         response = Response()
-        
         response.status = status.HTTP_201_CREATED
         response.data = {
             'message': 'success'
         }
         return response
-
-class AddOptionView(APIView):
-    #/options/add
-    def post(self, request):
-        #name + weight
-        pass
+    
+    # Select this topicId
+    def put(self, request, topicId):
+        token = request.COOKIES.get('jwt')
+        if token is None:
+            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        user = User.objects.filter(id=payload['id']).first()
+        if user is None:
+            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+        appuser = AppUser.objects.get(username=user.username)
+        
+        appuser.selectedTopicId = topicId
+        appuser.save(update_fields=['selectedTopicId'])
+        
+        response = Response()
+        response.status = status.HTTP_201_CREATED
+        response.data = {
+            'message': 'success'
+        }
+        return response
+        
+    # {field:string, value:string}, Change topic name/policy
+    def patch(self, request, topicId):
+        token = request.COOKIES.get('jwt')
+        if token is None:
+            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        user = User.objects.filter(id=payload['id']).first()
+        if user is None:
+            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        appuser = AppUser.objects.get(username=user.username)
+        
+        if request.data['field'] is None or request.data['field'] not in ['name', 'policy']:
+            return Response({"message":"Incorrect 'field' value"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        found = False
+        for i in range(len(appuser.topics)):
+            if appuser.topics[i]['_id'] == topicId:
+                found = True
+                appuser.topics[i][request.data['field']] = request.data['value']
+                break
+        
+        if not found:
+            return Response({"message":"Topic not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        appuser.save(update_fields=['topics'])
+        
+        response = Response()
+        response.status = status.HTTP_200_OK
+        response.data = {
+            'message': 'success'
+        }
+        return response
+    
+    # Delete this topic
+    def delete(self, request, topicId):
+        token = request.COOKIES.get('jwt')
+        if token is None:
+            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        user = User.objects.filter(id=payload['id']).first()
+        if user is None:
+            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        appuser = AppUser.objects.get(username=user.username)
+        
+        found = False
+        for i in range(len(appuser.topics)):
+            if appuser.topics[i]['_id'] == topicId:
+                found = True
+                del appuser.topics[i]
+                break
+        
+        if not found:
+            return Response({"message":"Topic not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        appuser.save(update_fields=['topics'])
+        
+        response = Response()
+        response.status = status.HTTP_200_OK
+        response.data = {
+            'message': 'success'
+        }
+        return response
+        
     
 class SetTopicNameView(APIView):
     #/topics/name
@@ -97,12 +177,6 @@ class SetBiasView(APIView):
     #/topics/bias
     def post(self, request):
         #optionId + bias
-        pass
-
-class SelectView(APIView):
-    #/topics/select
-    def post(self, request):
-        #topicId
         pass
     
 class ChangePolicyView(APIView):
