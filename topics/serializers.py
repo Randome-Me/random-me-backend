@@ -23,7 +23,7 @@ class TopicSerializer():
             "name": None,
             "policy": None,
             "t": None,
-            "options": None
+            "options": []
         }
         self.data['name'] = dict['name']
         self.data['policy'] = dict['policy']
@@ -36,7 +36,7 @@ class AppUserSerializer():
         self.data = {
             "username": None,
             "selectedTopicId": None,
-            "topics": None
+            "topics": []
         }
         self.data['username']  = username
         self.data['selectedTopicId']  = selectedTopicId
