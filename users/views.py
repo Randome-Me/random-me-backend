@@ -31,12 +31,21 @@ class RegisterView(APIView):
         appuser.save()
         serializer.save()
         
+        user = User.objects.filter(username=request.data['username']).first()
+        
+        payload = { 
+            "id": user.id, 
+        }
+        
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+    
+        appuserserializer = AppUserSerializer(appuser._id, appuser.username, appuser.language, appuser.selectedTopicId, appuser.topics)
+        
         response = Response()
         
+        response.set_cookie(key='jwt', value=token, httponly=True)
+        response.data = appuserserializer.data
         response.status = status.HTTP_201_CREATED
-        response.data = {
-            'message': 'success'
-        }
         
         return response
 
@@ -59,12 +68,13 @@ class LoginView(APIView):
         
         token = jwt.encode(payload, 'secret', algorithm='HS256')
         
+        appuser = AppUser.objects.get(username=user.username)
+        appuserserializer = AppUserSerializer(appuser._id, appuser.username, appuser.language, appuser.selectedTopicId, appuser.topics)
+        
         response = Response()
         
         response.set_cookie(key='jwt', value=token, httponly=True)
-        response.data = {
-            'message': 'success'
-        }
+        response.data = appuserserializer.data
         
         return response
     
