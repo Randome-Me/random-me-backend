@@ -46,6 +46,7 @@ class AppUserSerializer():
         }
         self.data['_id']  = str(_id)
         self.data['username']  = username
+        self.data['language']  = language
         self.data['selectedTopicId']  = selectedTopicId
         if len(topics) > 0:
             self.data['topics']  = [TopicSerializer(topics[i]).data for i in range(len(topics))]

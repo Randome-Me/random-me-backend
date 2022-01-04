@@ -61,7 +61,7 @@ class AddTopicView(APIView):
         return response
 
 class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
-    # <str:topicId>/
+    # /topics/<str:topicId>/
     
     lookup_field = 'topicId'
     
@@ -158,7 +158,7 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         return response
         
 class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
-    # <str:topicId>/<str:optionId>/
+    # /topics/<str:topicId>/<str:optionId>/
     
     lookup_field = ('topicId', 'optionId')
     
