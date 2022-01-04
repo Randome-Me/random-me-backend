@@ -25,6 +25,7 @@ class RegisterView(APIView):
             
         appuser = AppUser()
         appuser.username = request.data['username']
+        appuser.language = request.data['language']
         appuser.selectedTopicId=None
         appuser.topics=[]
         
@@ -45,6 +46,49 @@ class RegisterView(APIView):
         
         response.set_cookie(key='jwt', value=token, httponly=True)
         response.data = appuserserializer.data
+        response.status = status.HTTP_201_CREATED
+        
+        return response
+    
+class GuestRegisterView(APIView):
+    def post(self, request):
+        
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        password = request.data['password']
+        confirmPassword = request.data['confirmPassword']
+        
+        if password != confirmPassword:
+            return Response({
+                'message': 'Passwords do not match.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+        appuser = AppUser()
+        appuser.username = request.data['username']
+        appuser.language = request.data['language']
+        appuser.selectedTopicId = request.data['selectedTopicId']
+        appuser.topics = request.data['topics']
+        
+        appuser.save()
+        serializer.save()
+        
+        user = User.objects.filter(username=request.data['username']).first()
+        
+        payload = { 
+            "id": user.id, 
+        }
+        
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+    
+        
+        
+        response = Response()
+        
+        response.set_cookie(key='jwt', value=token, httponly=True)
+        response.data = {
+            "_id": str(appuser._id)
+        }
         response.status = status.HTTP_201_CREATED
         
         return response
