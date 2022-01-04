@@ -15,7 +15,7 @@ import jwt, uuid
 class AddTopicView(APIView):    
     # /topics/
     
-    # {name:string}, Add topic
+    # {_id:string, name:string}, Add topic
     def post(self, request):    
         token = request.COOKIES.get('jwt')
         if token is None:
@@ -26,19 +26,14 @@ class AddTopicView(APIView):
             return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
         
         appuser = AppUser.objects.get(username=user.username)
-        
-        _id = uuid.uuid4()
 
-        appuser.topics.append({"_id":_id,"name":request.data['name'], "policy":5, "t":0, "options":[]})
+        appuser.topics.append({"_id":request.data['_id'],"name":request.data['name'], "policy":5, "t":0, "options":[]})
         
         appuser.save(update_fields=['topics'])
         
         response = Response()
         
         response.status = status.HTTP_201_CREATED
-        response.data = {
-            '_id': _id
-        }
         return response
     
     # {_id:string}, Select this topicId
@@ -78,12 +73,11 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         appuser = AppUser.objects.get(username=user.username)
         
         foundTopic = False
-        _id = uuid.uuid4()
         
         for i in range(len(appuser.topics)):
             if appuser.topics[i]['_id'] == topicId:
                 foundTopic = True
-                appuser.topics[i]['options'].append({"_id":_id, "name":request.data['name'], "bias":request.data['bias'], "pulls":0, "reward":0})
+                appuser.topics[i]['options'].append({"_id":request.data['_id'], "name":request.data['name'], "bias":request.data['bias'], "pulls":0, "reward":0})
                 break
         
         if not foundTopic:
@@ -93,9 +87,6 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         
         response = Response()
         response.status = status.HTTP_201_CREATED
-        response.data = {
-            '_id': _id
-        }
         return response
         
     # {field:string, value:string}, Change topic name/policy
