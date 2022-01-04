@@ -55,7 +55,7 @@ class ForgotPasswordAPIView(APIView):
         
         token = jwt.encode(payload, 'secret', algorithm='HS256')
         
-        link = settings.CHANGE_PASSWORD_PAGE + '?token=' + token
+        link = str(settings.CHANGE_PASSWORD_PAGE) + '?token=' + token
         
         html_message = render_to_string('accounts/mail_template.html', context={'link': link})
         
