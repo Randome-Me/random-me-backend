@@ -60,7 +60,7 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
     
     lookup_field = 'topicId'
     
-    # {name:string, bias:int}, Add option to topic
+    # {_id: string, name:string, bias:int}, Add option to topic
     def post(self, request, topicId):
         token = request.COOKIES.get('jwt')
         if token is None:
