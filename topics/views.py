@@ -153,7 +153,7 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
     
     lookup_field = ('topicId', 'optionId')
     
-    # {reward:int}, Add option to topic
+    # {reward:int}, Pull arm
     def post(self, request, topicId, optionId):
         token = request.COOKIES.get('jwt')
         if token is None:

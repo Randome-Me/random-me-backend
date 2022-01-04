@@ -16,9 +16,22 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
+# Load environment variables
+load_dotenv()
+
+# Set MongoDB
 MongoClient.HOST = os.getenv('MONGODB_URI')
 
-load_dotenv()
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+# Change password path
+CHANGE_PASSWORD_PAGE = os.getenv('CHANGE_PASSWORD_PAGE')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -67,7 +80,7 @@ ROOT_URLCONF = 'random_me.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
