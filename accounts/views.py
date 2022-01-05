@@ -74,7 +74,7 @@ class ForgotPasswordAPIView(APIView):
         
         link = str(settings.CHANGE_PASSWORD_PAGE) + '?token=' + token
         
-        html_message = render_to_string('accounts/mail_template.html', context={'link': link})
+        html_message = render_to_string('accounts/mail_template.html', context={'link': link, 'username':user.username})
         
         mail.send_mail(
             subject='RandomMe: Change Your Password', 
@@ -86,7 +86,7 @@ class ForgotPasswordAPIView(APIView):
         
         resetpasswordtoken.save()
         
-        return SuccessResponse()
+        return SendMailSuccessResponse(language=language)
     
 class ResetPasswordAPIView(APIView):
     # /accounts/reset-password/

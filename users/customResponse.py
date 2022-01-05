@@ -95,3 +95,8 @@ class ChangePasswordSuccessResponse(CustomErrorResponse):
     status_code = status.HTTP_200_OK
     default_message = {"en": "Change password success.", "th": "กาเรปลี่ยนรหัสผ่านสำเร็จ"}
     default_code = 'chagePasswordSuccess'
+    
+class SendMailSuccessResponse(CustomErrorResponse):
+    status_code = status.HTTP_200_OK
+    default_message = {"en": "How to reset your password is sent to your email.If you don't see it in your inbox, please check your spam folder.", "th": "วิธีการเปลี่ยนรหัสผ่านถูกส่งไปยังอีเมลของคุณแล้ว หากคุณไม่ได้รับอีเมลนี้ กรุณาตรวจสอบกล่องข้อความขยะของอีเมลของคุณ"}
+    default_code = 'sendMailSuccess'
