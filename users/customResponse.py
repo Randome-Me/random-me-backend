@@ -73,7 +73,13 @@ class InvalidFieldResponse(CustomErrorResponse):
 class ExpiredLinkResponse(CustomErrorResponse):
     status_code = status.HTTP_400_BAD_REQUEST
     default_message = {"en": "This link is already expired.", "th": "ลิงค์นี้หมดอายุแล้ว"}
-    default_code = 'ExpiredLinkResponse'
+    default_code = 'expiredLinkResponse'
+    
+
+class InvalidTokenResponse(CustomErrorResponse):
+    status_code = status.HTTP_403_FORBIDDEN
+    default_message = {"en": "Invalid token.", "th": "โทเคนไม่ถูกต้อง"}
+    default_code = 'invaidToken'
     
 class SuccessResponse(CustomErrorResponse):
     status_code = status.HTTP_200_OK

@@ -89,12 +89,12 @@ class ResetPasswordAPIView(APIView):
         try:
             payload = jwt.decode(request.data['token'], 'secret', algorithms=['HS256'])
         except:
-            return CustomErrorResponse()
+            return InvalidTokenResponse(language=language)
         
         resetpasswordtoken = ResetPasswordToken.objects.filter(uuidToken=payload['uuidToken']).first()
         
         if resetpasswordtoken is None:
-            return CustomErrorResponse(language=language)
+            return InvalidTokenResponse(language=language)
         
         if resetpasswordtoken.expDate < datetime.now():
             return ExpiredLinkResponse(language=language)
