@@ -32,7 +32,7 @@ class AddTopicView(APIView):
         
         appuser.save(update_fields=['topics'])
         
-        return CreatedResponse(language=user.language)
+        return CreatedResponse(language=appuser.language)
     
     # {_id:string}, Select this topicId
     def patch(self, request):
@@ -49,7 +49,7 @@ class AddTopicView(APIView):
         appuser.selectedTopicId = request.data['_id']
         appuser.save(update_fields=['selectedTopicId'])
         
-        return SuccessResponse(language=user.language)
+        return SuccessResponse(language=appuser.language)
 
 class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
     # /topics/<str:topicId>/
@@ -77,11 +77,11 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return InvalidTopicResponse(language=user.language)
+            return InvalidTopicResponse(language=appuser.language)
         
         appuser.save(update_fields=['topics'])
         
-        return CreatedResponse(language=user.language)
+        return CreatedResponse(language=appuser.language)
         
     # {field:string, value:string}, Change topic name/policy
     def patch(self, request, topicId):
@@ -106,11 +106,11 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return InvalidTopicResponse(language=user.language)
+            return InvalidTopicResponse(language=appuser.language)
         
         appuser.save(update_fields=['topics'])
         
-        return SuccessResponse(language=user.language)
+        return SuccessResponse(language=appuser.language)
     
     # Delete this topic
     def delete(self, request, topicId):
@@ -132,11 +132,11 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return InvalidTopicResponse(language=user.language)
+            return InvalidTopicResponse(language=appuser.language)
         
         appuser.save(update_fields=['topics'])
 
-        return SuccessResponse(language=user.language)
+        return SuccessResponse(language=appuser.language)
         
 class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
     # /topics/<str:topicId>/<str:optionId>/
@@ -171,14 +171,14 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return InvalidTopicResponse(language=user.language)
+            return InvalidTopicResponse(language=appuser.language)
         
         if not foundOption:
-            return InvalidOptionResponse(language=user.language)
+            return InvalidOptionResponse(language=appuser.language)
         
         appuser.save(update_fields=['topics'])
 
-        return SuccessResponse(language=user.language)
+        return SuccessResponse(language=appuser.language)
         
     # {field:string, value:string}, Change topic name/bias
     def patch(self, request, topicId, optionId):
@@ -193,7 +193,7 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
         appuser = AppUser.objects.get(username=user.username)
         
         if request.data['field'] is None or request.data['field'] not in ['name', 'bias']:
-            return InvalidFieldResponse(language=user.language)
+            return InvalidFieldResponse(language=appuser.language)
         
         foundTopic = False
         foundOption = False
@@ -209,14 +209,14 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return InvalidTopicResponse(language=user.language)
+            return InvalidTopicResponse(language=appuser.language)
         
         if not foundOption:
-            return InvalidOptionResponse(language=user.language)
+            return InvalidOptionResponse(language=appuser.language)
         
         appuser.save(update_fields=['topics'])
 
-        return SuccessResponse(language=user.language)
+        return SuccessResponse(language=appuser.language)
     
     # Delete this topic
     def delete(self, request, topicId, optionId):
@@ -245,10 +245,10 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return InvalidTopicResponse(language=user.language)
+            return InvalidTopicResponse(language=appuser.language)
         
         if not foundOption:
-            return InvalidOptionResponse(language=user.language)
+            return InvalidOptionResponse(language=appuser.language)
         
         appuser.save(update_fields=['topics'])
         

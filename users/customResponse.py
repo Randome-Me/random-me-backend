@@ -69,6 +69,12 @@ class InvalidFieldResponse(CustomErrorResponse):
     default_message = {"en": "Invalid field value.", "th": "ไม่สามารถเปลี่ยนข้อมูลที่ต้องการได้"}
     default_code = 'invalidOption'
     
+
+class ExpiredLinkResponse(CustomErrorResponse):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_message = {"en": "This link is already expired.", "th": "ลิงค์นี้หมดอายุแล้ว"}
+    default_code = 'ExpiredLinkResponse'
+    
 class SuccessResponse(CustomErrorResponse):
     status_code = status.HTTP_200_OK
     default_message = {"en": "Success.", "th": "สำเร็จ"}
