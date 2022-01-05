@@ -40,7 +40,7 @@ class mismatchPassword(CustomErrorResponse):
     default_code = 'mismatchPassword'
     
 class userNotFound(CustomErrorResponse):
-    status_code = status.HTTP_404_NOT_FOUND
+    status_code = status.HTTP_401_UNAUTHORIZED
     default_message = {"en": "User not found.", "th": "ไม่มีผู้ใช้นี้"}
     default_code = 'userNotFound'
 
