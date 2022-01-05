@@ -12,6 +12,7 @@ from django.utils.html import strip_tags
 from .models import ResetPasswordToken
 from users.customResponse import *
 from datetime import datetime
+from datetime import datetime, timedelta
 import jwt, uuid
 
 # Create your models here.
@@ -47,11 +48,23 @@ class ForgotPasswordAPIView(APIView):
     # {email:str}, Send email to change password 
     def post(self, request):
         
+        if 'language' in request.data:
+            language = request.data['language']
+        else:
+            language = 'en'
+        
         user = User.objects.filter(email=request.data['email']).first()
         if user is None:
-            return InvalidEmailResponse()
+            return InvalidEmailResponse(language=language)
         
-        resetpasswordtoken = ResetPasswordToken(userId=user.id, uuidToken=uuid.uuid4())
+        resetpasswordtoken = ResetPasswordToken.objects.filter(userId=user.id).first()
+        if resetpasswordtoken is not None :
+            resetpasswordtoken.delete()
+        
+        resetpasswordtoken = ResetPasswordToken()
+        resetpasswordtoken.userId = user.id
+        resetpasswordtoken.uuidToken = uuid.uuid4()
+        resetpasswordtoken.expDate = datetime.now()+timedelta(hours=12)
         
         payload = { 
             "uuidToken": str(resetpasswordtoken.uuidToken), 
@@ -104,4 +117,4 @@ class ResetPasswordAPIView(APIView):
         user.save(update_fields=['password'])
         resetpasswordtoken.delete()
         
-        return SuccessResponse(language=language)
+        return ChangePasswordSuccessResponse(language=language)

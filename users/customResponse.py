@@ -86,8 +86,12 @@ class SuccessResponse(CustomErrorResponse):
     default_message = {"en": "Success.", "th": "สำเร็จ"}
     default_code = 'success'
     
-
 class CreatedResponse(CustomErrorResponse):
     status_code = status.HTTP_201_CREATED
     default_message = {"en": "Created.", "th": "สร้างสำเร็จ"}
     default_code = 'crated'
+    
+class ChangePasswordSuccessResponse(CustomErrorResponse):
+    status_code = status.HTTP_200_OK
+    default_message = {"en": "Change password success.", "th": "กาเรปลี่ยนรหัสผ่านสำเร็จ"}
+    default_code = 'chagePasswordSuccess'
