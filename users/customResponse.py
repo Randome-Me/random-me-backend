@@ -63,3 +63,8 @@ class invalidOption(CustomErrorResponse):
     status_code = status.HTTP_404_NOT_FOUND
     default_message = {"en": "Invalid optioin.", "th": "คัวเลือกไม่ถูกต้อง"}
     default_code = 'invalidOption'
+    
+class success(CustomErrorResponse):
+    status_code = status.HTTP_200_OK
+    default_message = {"en": "Success.", "th": "สำเร็จ"}
+    default_code = 'success'
