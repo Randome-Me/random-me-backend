@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from .models import AppUser
 from .customMixins import MultipleFieldLookupMixin
+from users.customResponse import *
 import jwt, uuid
 
 # Create your views here.
@@ -19,11 +20,11 @@ class AddTopicView(APIView):
     def post(self, request):    
         token = request.COOKIES.get('jwt')
         if token is None:
-            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+            return UnauthenticatedResponse()
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         user = User.objects.filter(id=payload['id']).first()
         if user is None:
-            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return UserNotFoundResponse()
         
         appuser = AppUser.objects.get(username=user.username)
 
@@ -31,16 +32,13 @@ class AddTopicView(APIView):
         
         appuser.save(update_fields=['topics'])
         
-        response = Response()
-        
-        response.status = status.HTTP_201_CREATED
-        return response
+        return CreatedResponse(language=user.language)
     
     # {_id:string}, Select this topicId
     def patch(self, request):
         token = request.COOKIES.get('jwt')
         if token is None:
-            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+            return UnauthenticatedResponse()
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         user = User.objects.filter(id=payload['id']).first()
         if user is None:
@@ -51,9 +49,7 @@ class AddTopicView(APIView):
         appuser.selectedTopicId = request.data['_id']
         appuser.save(update_fields=['selectedTopicId'])
         
-        response = Response()
-        response.status = status.HTTP_204_NO_CONTENT
-        return response
+        return SuccessResponse(language=user.language)
 
 class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
     # /topics/<str:topicId>/
@@ -64,11 +60,11 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
     def post(self, request, topicId):
         token = request.COOKIES.get('jwt')
         if token is None:
-            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+            return UnauthenticatedResponse()
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         user = User.objects.filter(id=payload['id']).first()
         if user is None:
-            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return UserNotFoundResponse()
         
         appuser = AppUser.objects.get(username=user.username)
         
@@ -81,23 +77,21 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
+            return InvalidTopicResponse(language=user.language)
         
         appuser.save(update_fields=['topics'])
         
-        response = Response()
-        response.status = status.HTTP_201_CREATED
-        return response
+        return CreatedResponse(language=user.language)
         
     # {field:string, value:string}, Change topic name/policy
     def patch(self, request, topicId):
         token = request.COOKIES.get('jwt')
         if token is None:
-            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+            return UnauthenticatedResponse()
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         user = User.objects.filter(id=payload['id']).first()
         if user is None:
-            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return UserNotFoundResponse()
         
         appuser = AppUser.objects.get(username=user.username)
         
@@ -112,23 +106,21 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
+            return InvalidTopicResponse(language=user.language)
         
         appuser.save(update_fields=['topics'])
         
-        response = Response()
-        response.status = status.HTTP_204_NO_CONTENT
-        return response
+        return SuccessResponse(language=user.language)
     
     # Delete this topic
     def delete(self, request, topicId):
         token = request.COOKIES.get('jwt')
         if token is None:
-            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+            return UnauthenticatedResponse()
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         user = User.objects.filter(id=payload['id']).first()
         if user is None:
-            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return UserNotFoundResponse()
         
         appuser = AppUser.objects.get(username=user.username)
         
@@ -140,13 +132,11 @@ class TopicsGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
+            return InvalidTopicResponse(language=user.language)
         
         appuser.save(update_fields=['topics'])
-        
-        response = Response()
-        response.status = status.HTTP_204_NO_CONTENT
-        return response
+
+        return SuccessResponse(language=user.language)
         
 class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
     # /topics/<str:topicId>/<str:optionId>/
@@ -157,11 +147,11 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
     def post(self, request, topicId, optionId):
         token = request.COOKIES.get('jwt')
         if token is None:
-            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+            return UnauthenticatedResponse()
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         user = User.objects.filter(id=payload['id']).first()
         if user is None:
-            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return UserNotFoundResponse()
         
         appuser = AppUser.objects.get(username=user.username)
         
@@ -181,31 +171,29 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
+            return InvalidTopicResponse(language=user.language)
         
         if not foundOption:
-            return Response({"message":"invalid optionId"}, status=status.HTTP_404_NOT_FOUND)
+            return InvalidOptionResponse(language=user.language)
         
         appuser.save(update_fields=['topics'])
-        
-        response = Response()
-        response.status = status.HTTP_204_NO_CONTENT
-        return response
+
+        return SuccessResponse(language=user.language)
         
     # {field:string, value:string}, Change topic name/bias
     def patch(self, request, topicId, optionId):
         token = request.COOKIES.get('jwt')
         if token is None:
-            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+            return UnauthenticatedResponse()
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         user = User.objects.filter(id=payload['id']).first()
         if user is None:
-            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return UserNotFoundResponse()
         
         appuser = AppUser.objects.get(username=user.username)
         
         if request.data['field'] is None or request.data['field'] not in ['name', 'bias']:
-            return Response({"message":"Incorrect 'field' value"}, status=status.HTTP_400_BAD_REQUEST)
+            return InvalidFieldResponse(language=user.language)
         
         foundTopic = False
         foundOption = False
@@ -221,26 +209,24 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
+            return InvalidTopicResponse(language=user.language)
         
         if not foundOption:
-            return Response({"message":"invalid optionId"}, status=status.HTTP_404_NOT_FOUND)
+            return InvalidOptionResponse(language=user.language)
         
         appuser.save(update_fields=['topics'])
-        
-        response = Response()
-        response.status = status.HTTP_204_NO_CONTENT
-        return response
+
+        return SuccessResponse(language=user.language)
     
     # Delete this topic
     def delete(self, request, topicId, optionId):
         token = request.COOKIES.get('jwt')
         if token is None:
-            return Response({"message":"User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+            return UnauthenticatedResponse()
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         user = User.objects.filter(id=payload['id']).first()
         if user is None:
-            return Response({"message":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return UserNotFoundResponse()
         
         appuser = AppUser.objects.get(username=user.username)
         
@@ -259,13 +245,11 @@ class OptionGenericAPIView(MultipleFieldLookupMixin, generics.GenericAPIView, mi
                 break
         
         if not foundTopic:
-            return Response({"message":"invalid topicId"}, status=status.HTTP_404_NOT_FOUND)
+            return InvalidTopicResponse(language=user.language)
         
         if not foundOption:
-            return Response({"message":"invalid optionId"}, status=status.HTTP_404_NOT_FOUND)
+            return InvalidOptionResponse(language=user.language)
         
         appuser.save(update_fields=['topics'])
         
-        response = Response()
-        response.status = status.HTTP_204_NO_CONTENT
-        return response
+        return SuccessResponse()
