@@ -49,7 +49,7 @@ class RegisterView(APIView):
         
         token = jwt.encode(payload, 'secret', algorithm='HS256')
     
-        appuserserializer = AppUserSerializer(appuser._id, appuser.username, appuser.language, appuser.selectedTopicId, appuser.topics)
+        appuserserializer = AppUserSerializer(appuser._id, appuser.username, user.email, appuser.language, appuser.selectedTopicId, appuser.topics)
         
         response = Response()
         
@@ -134,7 +134,7 @@ class LoginView(APIView):
         token = jwt.encode(payload, 'secret', algorithm='HS256')
         
         appuser = AppUser.objects.get(username=user.username)
-        appuserserializer = AppUserSerializer(appuser._id, appuser.username, appuser.language, appuser.selectedTopicId, appuser.topics)
+        appuserserializer = AppUserSerializer(appuser._id, appuser.username, user.email, appuser.language, appuser.selectedTopicId, appuser.topics)
         
         response = Response()
         
@@ -160,7 +160,7 @@ class UserView(APIView):
         appuser = AppUser.objects.get(username=user.username)
         
         appuser = AppUser.objects.get(username=user.username)
-        appuserserializer = AppUserSerializer(appuser._id, appuser.username, appuser.language, appuser.selectedTopicId, appuser.topics)
+        appuserserializer = AppUserSerializer(appuser._id, appuser.username, user.email, appuser.language, appuser.selectedTopicId, appuser.topics)
         return Response(appuserserializer.data)
     
 class LogoutView(APIView):

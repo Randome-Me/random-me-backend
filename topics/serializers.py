@@ -36,16 +36,18 @@ class TopicSerializer():
             self.data['options'] = [OptionSerializer(dict['options'][i]).data for i in range(len(dict['options']))] 
 
 class AppUserSerializer():    
-    def __init__(self, _id, username, language, selectedTopicId, topics):
+    def __init__(self, _id, username, email, language, selectedTopicId, topics):
         self.data = {
             "_id": None,
             "username": None,
+            "email": None,
             "language":'en',
             "selectedTopicId": None,
             "topics": []
         }
         self.data['_id']  = str(_id)
         self.data['username']  = username
+        self.data['email']  = email
         self.data['language']  = language
         self.data['selectedTopicId']  = selectedTopicId
         if len(topics) > 0:
