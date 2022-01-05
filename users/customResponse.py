@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 # Custom Response with specific language
 class CustomErrorResponse(Response):
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    default_message = _('A server error occurred.')
+    default_message = {"en": "A server error occurred.", "th": "เกิดความผิดพลาด"}
     default_code = 'error'
     default_language = 'en'
 
@@ -14,7 +14,7 @@ class CustomErrorResponse(Response):
             code = self.default_code
         if language is None:
             language = self.default_language
-        super().__init__(data={'message': self.message[language]}, status=self.status_code)
+        super().__init__(data={'message': self.default_message[language]}, status=self.status_code)
         
     def __str__(self):
         return str(self.message)
