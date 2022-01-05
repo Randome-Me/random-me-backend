@@ -19,6 +19,11 @@ class CustomErrorResponse(Response):
     def __str__(self):
         return str(self.message)
 
+
+class InvalidUsernameResponse(CustomErrorResponse):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_message = {"en": "Username must be between 4-20 characters and can contain any letters from a-z, A-Z, and 0-9.", "th": "ชื่อผู้ใช้ต้องมีความยาวระหว่าง 8-20 ตัวอักษี และประกอบไปด้วยตัวอักษร a-z, A-Z, หรือ 0-9"}
+    default_code = 'usernameAlreadyExist'
 class UsernameAlreadyExistResponse(CustomErrorResponse):
     status_code = status.HTTP_400_BAD_REQUEST
     default_message = {"en": "This username is already exist.", "th": "ชื่อผู้ใช้นี้มีอยู่แล้วในระบบ"}
@@ -28,7 +33,11 @@ class EmailAlreadyUsedResponse(CustomErrorResponse):
     status_code = status.HTTP_400_BAD_REQUEST
     default_message = {"en": "This email is already used.", "th": "อีเมลนี้มีอยู่แล้วในระบบ"}
     default_code = 'emailAlreadyUsed'
-
+    
+class InvalidPasswordResponse(CustomErrorResponse):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_message = {"en": "Password must be at least 8 characters and can contain any letters from a-z, A-Z, 0-9 and special characters (#,?,!,@,$,%,^,&,*,-).", "th": "รหัสผ่านต้องมีความยาว 8 ตัวอักษรขึ้นไป และประกอบไปด้วยตัวอักษร a-z, A-Z, 0-9 หรือตัวอักษรพิเศษ (#,?,!,@,$,%,^,&,*,-)"}
+    default_code = 'usernameAlreadyExist'
 class InvalidEmailResponse(CustomErrorResponse):
     status_code = status.HTTP_400_BAD_REQUEST
     default_message = {"en": "Invalid email.", "th": "อีเมลไม่ถูกต้อง"}

@@ -6,7 +6,7 @@ from .customResponse import *
 from django.contrib.auth.models import User
 from topics.models import AppUser
 from topics.serializers import AppUserSerializer
-import jwt
+import jwt, re
 
 # Create your views here.
 class RegisterView(APIView):
@@ -16,6 +16,9 @@ class RegisterView(APIView):
             language = request.data['language']
         else:
             language = 'en'
+            
+        if not re.fullmatch(r'[a-zA-Z0-9]{4,20}', request.data['username']):
+            return InvalidUsernameResponse(language=language)
         
         serializer = UserSerializer(data=request.data)
         if not serializer.is_valid():
@@ -33,6 +36,9 @@ class RegisterView(APIView):
         
         if password != confirmPassword:
             return MismatchPasswordResponse(language=language)
+
+        if not re.fullmatch(r'[A-Za-z0-9#?!@$%^&*-]{8,}', password):
+            return InvalidPasswordResponse(language=language)
             
         appuser = AppUser()
         appuser.username = request.data['username']
