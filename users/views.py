@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
+from .customResponse import *
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password
 from rest_framework import exceptions
@@ -14,15 +15,14 @@ class RegisterView(APIView):
     def post(self, request):
         
         serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            print(serializer.errors)
         
         password = request.data['password']
         confirmPassword = request.data['confirmPassword']
         
         if password != confirmPassword:
-            return Response({
-                'message': 'Passwords do not match.'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return mismatchPassword(language=request.data['language'])
             
         appuser = AppUser()
         appuser.username = request.data['username']
@@ -59,9 +59,7 @@ class GuestRegisterView(APIView):
         confirmPassword = request.data['confirmPassword']
         
         if password != confirmPassword:
-            return Response({
-                'message': 'Passwords do not match.'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return mismatchPassword(language=request.data['language'])
             
         appuser = AppUser()
         appuser.username = request.data['username']
@@ -103,7 +101,7 @@ class LoginView(APIView):
         print(check_password(password, user.password))
         
         if user is None or (not user.check_password(password)):
-            raise exceptions.AuthenticationFailed('Invalid username or password')
+            return authenticationFailed(request.data['language'])
         
         payload = { 
             "id": user.id, 
@@ -126,11 +124,16 @@ class UserView(APIView):
         token = request.COOKIES.get('jwt')
         
         if not token:
-            raise exceptions.AuthenticationFailed('Unauthenticated')
+            return unauthenticatedResponse()
         
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         
-        user = User.objects.get(id=payload['id'])
+        user = User.objects.filter(id=payload['id']).first()
+        
+        if user is None:
+            return userNotFound()
+        
+        appuser = AppUser.objects.get(username=user.username)
         
         appuser = AppUser.objects.get(username=user.username)
         appuserserializer = AppUserSerializer(appuser._id, appuser.username, appuser.language, appuser.selectedTopicId, appuser.topics)
@@ -138,9 +141,6 @@ class UserView(APIView):
     
 class LogoutView(APIView):
     def post(self, request):
-        response = Response()
+        response = success()
         response.delete_cookie('jwt')
-        response.data = {
-            'message': 'success'
-        }
         return response
