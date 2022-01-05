@@ -61,7 +61,12 @@ class InvalidTopicResponse(CustomErrorResponse):
    
 class InvalidOptionResponse(CustomErrorResponse):
     status_code = status.HTTP_404_NOT_FOUND
-    default_message = {"en": "Invalid optioin.", "th": "คัวเลือกไม่ถูกต้อง"}
+    default_message = {"en": "Invalid optioin.", "th": "ตัวเลือกไม่ถูกต้อง"}
+    default_code = 'invalidOption'
+    
+class InvalidFieldResponse(CustomErrorResponse):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_message = {"en": "Invalid field value.", "th": "ไม่สามารถเปลี่ยนข้อมูลที่ต้องการได้"}
     default_code = 'invalidOption'
     
 class SuccessResponse(CustomErrorResponse):
