@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import check_password
 from rest_framework import exceptions
 from topics.models import AppUser
 from topics.serializers import AppUserSerializer
@@ -30,9 +31,7 @@ class RegisterView(APIView):
         appuser.topics=[]
         
         appuser.save()
-        serializer.save()
-        
-        user = User.objects.filter(username=request.data['username']).first()
+        user = User.objects.create_user(request.data['username'], request.data['email'], request.data['password'])
         
         payload = { 
             "id": user.id, 
@@ -71,7 +70,7 @@ class GuestRegisterView(APIView):
         appuser.topics = request.data['topics']
         
         appuser.save()
-        serializer.save()
+        user = User.objects.create_user(request.data['username'], request.data['email'], request.data['password'])
         
         user = User.objects.filter(username=request.data['username']).first()
         
@@ -100,11 +99,11 @@ class LoginView(APIView):
         
         user = User.objects.filter(username=username).first()
         
-        if user is None:
-            raise exceptions.AuthenticationFailed('User Not Found')
+        print(password)
+        print(check_password(password, user.password))
         
-        if user.check_password(password):
-            raise exceptions.AuthenticationFailed('Incorrect Password')
+        if user is None or (not user.check_password(password)):
+            raise exceptions.AuthenticationFailed('Invalid username or password')
         
         payload = { 
             "id": user.id, 
@@ -127,7 +126,7 @@ class UserView(APIView):
         token = request.COOKIES.get('jwt')
         
         if not token:
-            raise exceptions.AuthenticationFailed('Unduthenticated')
+            raise exceptions.AuthenticationFailed('Unauthenticated')
         
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         
