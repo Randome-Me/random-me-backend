@@ -86,7 +86,10 @@ class ResetPasswordAPIView(APIView):
         else:
             language = 'en'
         
-        payload = jwt.decode(request.data['token'], 'secret', algorithms=['HS256'])
+        try:
+            payload = jwt.decode(request.data['token'], 'secret', algorithms=['HS256'])
+        except:
+            return CustomErrorResponse()
         
         resetpasswordtoken = ResetPasswordToken.objects.filter(uuidToken=payload['uuidToken']).first()
         
