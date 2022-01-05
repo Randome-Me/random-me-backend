@@ -97,9 +97,6 @@ class LoginView(APIView):
         
         user = User.objects.filter(username=username).first()
         
-        print(password)
-        print(check_password(password, user.password))
-        
         if user is None or (not user.check_password(password)):
             return authenticationFailed(request.data['language'])
         
