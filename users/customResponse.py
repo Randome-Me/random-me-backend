@@ -57,7 +57,7 @@ class authenticationFailed(CustomErrorResponse):
 class invalidTopic(CustomErrorResponse):
     status_code = status.HTTP_404_NOT_FOUND
     default_message = {"en": "Invalid topic.", "th": "หัวข้อไม่ถูกต้อง"}
-    default_code = 'authenticationFailed'
+    default_code = 'invalidTopic'
    
 class invalidOption(CustomErrorResponse):
     status_code = status.HTTP_404_NOT_FOUND
