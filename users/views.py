@@ -12,26 +12,31 @@ import jwt
 class RegisterView(APIView):
     def post(self, request):
         
+        if 'language' in request.data:
+            language = request.data['language']
+        else:
+            language = 'en'
+        
         serializer = UserSerializer(data=request.data)
         if not serializer.is_valid():
             if 'username' in serializer.errors:
-                return UsernameAlreadyExistResponse()
+                return UsernameAlreadyExistResponse(language=language)
             if 'email' in serializer.errors:
                 if serializer.errors['email'][0].code == 'unique':
-                    return EmailAlreadyUsedResponse()
+                    return EmailAlreadyUsedResponse(language=language)
                 if serializer.errors['email'][0].code == 'invalid':
-                    return InvalidEmailResponse()
-            return CustomErrorResponse()
+                    return InvalidEmailResponse(language=language)
+            return CustomErrorResponse(language=language)
         
         password = request.data['password']
         confirmPassword = request.data['confirmPassword']
         
         if password != confirmPassword:
-            return MismatchPasswordResponse(language=request.data['language'])
+            return MismatchPasswordResponse(language=language)
             
         appuser = AppUser()
         appuser.username = request.data['username']
-        appuser.language = request.data['language']
+        appuser.language = language
         appuser.selectedTopicId=None
         appuser.topics=[]
         
@@ -57,26 +62,31 @@ class RegisterView(APIView):
 class GuestRegisterView(APIView):
     def post(self, request):
         
+        if 'language' in request.data:
+            language = request.data['language']
+        else:
+            language = 'en'
+        
         serializer = UserSerializer(data=request.data)
         if not serializer.is_valid():
             if 'username' in serializer.errors:
-                return UsernameAlreadyExistResponse()
+                return UsernameAlreadyExistResponse(language=language)
             if 'email' in serializer.errors:
                 if serializer.errors['email'][0].code == 'unique':
-                    return EmailAlreadyUsedResponse()
+                    return EmailAlreadyUsedResponse(language=language)
                 if serializer.errors['email'][0].code == 'invalid':
-                    return InvalidEmailResponse()
+                    return InvalidEmailResponse(language=language)
             return CustomErrorResponse()
         
         password = request.data['password']
         confirmPassword = request.data['confirmPassword']
         
         if password != confirmPassword:
-            return MismatchPasswordResponse(language=request.data['language'])
+            return MismatchPasswordResponse(language=language)
             
         appuser = AppUser()
         appuser.username = request.data['username']
-        appuser.language = request.data['language']
+        appuser.language = language
         appuser.selectedTopicId = request.data['selectedTopicId']
         appuser.topics = request.data['topics']
         
@@ -107,11 +117,15 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data['username']
         password = request.data['password']
+        if 'language' in request.data:
+            language = request.data['language']
+        else:
+            language = 'en'
         
         user = User.objects.filter(username=username).first()
         
         if user is None or (not user.check_password(password)):
-            return AuthenticationFailedResponse(request.data['language'])
+            return AuthenticationFailedResponse(language=language)
         
         payload = { 
             "id": user.id, 
