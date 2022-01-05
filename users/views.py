@@ -15,19 +15,19 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if not serializer.is_valid():
             if 'username' in serializer.errors:
-                return UsernameAlreadyExist()
+                return UsernameAlreadyExistResponse()
             if 'email' in serializer.errors:
                 if serializer.errors['email'][0].code == 'unique':
-                    return EmailAlreadyUsed()
+                    return EmailAlreadyUsedResponse()
                 if serializer.errors['email'][0].code == 'invalid':
-                    return InvalidEmail()
+                    return InvalidEmailResponse()
             return CustomErrorResponse()
         
         password = request.data['password']
         confirmPassword = request.data['confirmPassword']
         
         if password != confirmPassword:
-            return MismatchPassword(language=request.data['language'])
+            return MismatchPasswordResponse(language=request.data['language'])
             
         appuser = AppUser()
         appuser.username = request.data['username']
@@ -60,19 +60,19 @@ class GuestRegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if not serializer.is_valid():
             if 'username' in serializer.errors:
-                return UsernameAlreadyExist()
+                return UsernameAlreadyExistResponse()
             if 'email' in serializer.errors:
                 if serializer.errors['email'][0].code == 'unique':
-                    return EmailAlreadyUsed()
+                    return EmailAlreadyUsedResponse()
                 if serializer.errors['email'][0].code == 'invalid':
-                    return InvalidEmail()
+                    return InvalidEmailResponse()
             return CustomErrorResponse()
         
         password = request.data['password']
         confirmPassword = request.data['confirmPassword']
         
         if password != confirmPassword:
-            return MismatchPassword(language=request.data['language'])
+            return MismatchPasswordResponse(language=request.data['language'])
             
         appuser = AppUser()
         appuser.username = request.data['username']
@@ -111,7 +111,7 @@ class LoginView(APIView):
         user = User.objects.filter(username=username).first()
         
         if user is None or (not user.check_password(password)):
-            return AuthenticationFailed(request.data['language'])
+            return AuthenticationFailedResponse(request.data['language'])
         
         payload = { 
             "id": user.id, 
@@ -141,7 +141,7 @@ class UserView(APIView):
         user = User.objects.filter(id=payload['id']).first()
         
         if user is None:
-            return UserNotFound()
+            return UserNotFoundResponse()
         
         appuser = AppUser.objects.get(username=user.username)
         
@@ -151,6 +151,6 @@ class UserView(APIView):
     
 class LogoutView(APIView):
     def post(self, request):
-        response = Success()
+        response = SuccessResponse()
         response.delete_cookie('jwt')
         return response

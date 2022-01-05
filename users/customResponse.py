@@ -19,27 +19,27 @@ class CustomErrorResponse(Response):
     def __str__(self):
         return str(self.message)
 
-class UsernameAlreadyExist(CustomErrorResponse):
+class UsernameAlreadyExistResponse(CustomErrorResponse):
     status_code = status.HTTP_400_BAD_REQUEST
     default_message = {"en": "This username is already exist.", "th": "ชื่อผู้ใช้นี้มีอยู่แล้วในระบบ"}
     default_code = 'usernameAlreadyExist'
 
-class EmailAlreadyUsed(CustomErrorResponse):
+class EmailAlreadyUsedResponse(CustomErrorResponse):
     status_code = status.HTTP_400_BAD_REQUEST
     default_message = {"en": "This email is already used.", "th": "อีเมลนี้มีอยู่แล้วในระบบ"}
     default_code = 'emailAlreadyUsed'
 
-class InvalidEmail(CustomErrorResponse):
+class InvalidEmailResponse(CustomErrorResponse):
     status_code = status.HTTP_400_BAD_REQUEST
     default_message = {"en": "Invalid email.", "th": "อีเมลไม่ถูกต้อง"}
     default_code = 'invalidEmail'
 
-class MismatchPassword(CustomErrorResponse):
+class MismatchPasswordResponse(CustomErrorResponse):
     status_code = status.HTTP_400_BAD_REQUEST
     default_message = {"en": "Password did not match.", "th": "รหัสผ่านไม่ตรงกัน"}
     default_code = 'mismatchPassword'
     
-class UserNotFound(CustomErrorResponse):
+class UserNotFoundResponse(CustomErrorResponse):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_message = {"en": "User not found.", "th": "ไม่มีผู้ใช้นี้"}
     default_code = 'userNotFound'
@@ -49,22 +49,28 @@ class UnauthenticatedResponse(CustomErrorResponse):
     default_message = {"en": "Has not log in.", "th": "ยังไม่ได้เข้าสู่ระบบ"}
     default_code = 'unauthenticated'
     
-class AuthenticationFailed(CustomErrorResponse):
+class AuthenticationFailedResponse(CustomErrorResponse):
     status_code = status.HTTP_403_FORBIDDEN
     default_message = {"en": "Invalid username or password.", "th": "ชื้อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง"}
     default_code = 'authenticationFailed'
     
-class InvalidTopic(CustomErrorResponse):
+class InvalidTopicResponse(CustomErrorResponse):
     status_code = status.HTTP_404_NOT_FOUND
     default_message = {"en": "Invalid topic.", "th": "หัวข้อไม่ถูกต้อง"}
     default_code = 'invalidTopic'
    
-class InvalidOption(CustomErrorResponse):
+class InvalidOptionResponse(CustomErrorResponse):
     status_code = status.HTTP_404_NOT_FOUND
     default_message = {"en": "Invalid optioin.", "th": "คัวเลือกไม่ถูกต้อง"}
     default_code = 'invalidOption'
     
-class Success(CustomErrorResponse):
+class SuccessResponse(CustomErrorResponse):
     status_code = status.HTTP_200_OK
     default_message = {"en": "Success.", "th": "สำเร็จ"}
     default_code = 'success'
+    
+
+class CreatedResponse(CustomErrorResponse):
+    status_code = status.HTTP_201_CREATED
+    default_message = {"en": "Created.", "th": "สร้างสำเร็จ"}
+    default_code = 'crated'
