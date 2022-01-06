@@ -3,7 +3,7 @@ from .views import *
 from topics.models import *
 
 urlpatterns = [
-    path('language/', ChangeLanguageAPIView.as_view()),
-    path('forgot-password/', ForgotPasswordAPIView.as_view()),
-    path('reset-password/', ResetPasswordAPIView.as_view())
+    path("language/", ChangeLanguageAPIView.as_view()),
+    path("forgot-password/", ForgotPasswordAPIView.as_view()),
+    path("reset-password/", ResetPasswordAPIView.as_view()),
 ]

@@ -8,17 +8,36 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='ResetPasswordToken',
+            name="ResetPasswordToken",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('userId', models.IntegerField()),
-                ('uuidToken', models.CharField(default='6b123260-9fac-49f3-a401-34ba2170c5c7', max_length=36, unique=True)),
-                ('expDate', models.DateTimeField(default=datetime.datetime(2022, 1, 6, 11, 31, 53, 131240))),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("userId", models.IntegerField()),
+                (
+                    "uuidToken",
+                    models.CharField(
+                        default="6b123260-9fac-49f3-a401-34ba2170c5c7",
+                        max_length=36,
+                        unique=True,
+                    ),
+                ),
+                (
+                    "expDate",
+                    models.DateTimeField(
+                        default=datetime.datetime(2022, 1, 6, 11, 31, 53, 131240)
+                    ),
+                ),
             ],
         ),
     ]

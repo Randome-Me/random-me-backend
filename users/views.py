@@ -11,166 +11,191 @@ import jwt, re
 # Create your views here.
 class RegisterView(APIView):
     def post(self, request):
-        
-        if 'language' in request.data:
-            language = request.data['language']
+
+        if "language" in request.data:
+            language = request.data["language"]
         else:
-            language = 'en'
-            
-        if not re.fullmatch(r'[a-zA-Z0-9]{4,20}', request.data['username']):
+            language = "en"
+
+        if not re.fullmatch(r"[a-zA-Z0-9]{4,20}", request.data["username"]):
             return InvalidUsernameResponse(language=language)
-        
+
         serializer = UserSerializer(data=request.data)
         if not serializer.is_valid():
-            if 'username' in serializer.errors:
+            if "username" in serializer.errors:
                 return UsernameAlreadyExistResponse(language=language)
-            if 'email' in serializer.errors:
-                if serializer.errors['email'][0].code == 'unique':
+            if "email" in serializer.errors:
+                if serializer.errors["email"][0].code == "unique":
                     return EmailAlreadyUsedResponse(language=language)
-                if serializer.errors['email'][0].code == 'invalid':
+                if serializer.errors["email"][0].code == "invalid":
                     return InvalidEmailResponse(language=language)
             return CustomErrorResponse(language=language)
-        
-        password = request.data['password']
-        confirmPassword = request.data['confirmPassword']
-        
+
+        password = request.data["password"]
+        confirmPassword = request.data["confirmPassword"]
+
         if password != confirmPassword:
             return MismatchPasswordResponse(language=language)
 
-        if not re.fullmatch(r'[A-Za-z0-9#?!@$%^&*-]{8,}', password):
+        if not re.fullmatch(r"[A-Za-z0-9#?!@$%^&*-]{8,}", password):
             return InvalidPasswordResponse(language=language)
-            
+
         appuser = AppUser()
-        appuser.username = request.data['username']
+        appuser.username = request.data["username"]
         appuser.language = language
-        appuser.selectedTopicId=None
-        appuser.topics=[]
-        
+        appuser.selectedTopicId = None
+        appuser.topics = []
+
         appuser.save()
-        user = User.objects.create_user(request.data['username'], request.data['email'], request.data['password'])
-        
-        payload = { 
-            "id": user.id, 
+        user = User.objects.create_user(
+            request.data["username"], request.data["email"], request.data["password"]
+        )
+
+        payload = {
+            "id": user.id,
         }
-        
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
-    
-        appuserserializer = AppUserSerializer(appuser._id, appuser.username, user.email, appuser.language, appuser.selectedTopicId, appuser.topics)
-        
+
+        token = jwt.encode(payload, "secret", algorithm="HS256")
+
+        appuserserializer = AppUserSerializer(
+            appuser._id,
+            appuser.username,
+            user.email,
+            appuser.language,
+            appuser.selectedTopicId,
+            appuser.topics,
+        )
+
         response = Response()
-        
-        response.set_cookie(key='jwt', value=token, httponly=True)
+
+        response.set_cookie(key="jwt", value=token, httponly=True)
         response.data = appuserserializer.data
         response.status = status.HTTP_201_CREATED
-        
+
         return response
-    
+
+
 class GuestRegisterView(APIView):
     def post(self, request):
-        
-        if 'language' in request.data:
-            language = request.data['language']
+
+        if "language" in request.data:
+            language = request.data["language"]
         else:
-            language = 'en'
-        
+            language = "en"
+
         serializer = UserSerializer(data=request.data)
         if not serializer.is_valid():
-            if 'username' in serializer.errors:
+            if "username" in serializer.errors:
                 return UsernameAlreadyExistResponse(language=language)
-            if 'email' in serializer.errors:
-                if serializer.errors['email'][0].code == 'unique':
+            if "email" in serializer.errors:
+                if serializer.errors["email"][0].code == "unique":
                     return EmailAlreadyUsedResponse(language=language)
-                if serializer.errors['email'][0].code == 'invalid':
+                if serializer.errors["email"][0].code == "invalid":
                     return InvalidEmailResponse(language=language)
             return CustomErrorResponse()
-        
-        password = request.data['password']
-        confirmPassword = request.data['confirmPassword']
-        
+
+        password = request.data["password"]
+        confirmPassword = request.data["confirmPassword"]
+
         if password != confirmPassword:
             return MismatchPasswordResponse(language=language)
-            
+
         appuser = AppUser()
-        appuser.username = request.data['username']
+        appuser.username = request.data["username"]
         appuser.language = language
-        appuser.selectedTopicId = request.data['selectedTopicId']
-        appuser.topics = request.data['topics']
-        
+        appuser.selectedTopicId = request.data["selectedTopicId"]
+        appuser.topics = request.data["topics"]
+
         appuser.save()
-        user = User.objects.create_user(request.data['username'], request.data['email'], request.data['password'])
-        
-        user = User.objects.filter(username=request.data['username']).first()
-        
-        payload = { 
-            "id": user.id, 
+        user = User.objects.create_user(
+            request.data["username"], request.data["email"], request.data["password"]
+        )
+
+        user = User.objects.filter(username=request.data["username"]).first()
+
+        payload = {
+            "id": user.id,
         }
-        
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
-    
-        
-        
+
+        token = jwt.encode(payload, "secret", algorithm="HS256")
+
         response = Response()
-        
-        response.set_cookie(key='jwt', value=token, httponly=True)
-        response.data = {
-            "_id": str(appuser._id)
-        }
+
+        response.set_cookie(key="jwt", value=token, httponly=True)
+        response.data = {"_id": str(appuser._id)}
         response.status = status.HTTP_201_CREATED
-        
+
         return response
+
 
 class LoginView(APIView):
     def post(self, request):
-        username = request.data['username']
-        password = request.data['password']
-        if 'language' in request.data:
-            language = request.data['language']
+        username = request.data["username"]
+        password = request.data["password"]
+        if "language" in request.data:
+            language = request.data["language"]
         else:
-            language = 'en'
-        
+            language = "en"
+
         user = User.objects.filter(username=username).first()
-        
+
         if user is None or (not user.check_password(password)):
             return AuthenticationFailedResponse(language=language)
-        
-        payload = { 
-            "id": user.id, 
+
+        payload = {
+            "id": user.id,
         }
-        
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
-        
+
+        token = jwt.encode(payload, "secret", algorithm="HS256")
+
         appuser = AppUser.objects.get(username=user.username)
-        appuserserializer = AppUserSerializer(appuser._id, appuser.username, user.email, appuser.language, appuser.selectedTopicId, appuser.topics)
-        
+        appuserserializer = AppUserSerializer(
+            appuser._id,
+            appuser.username,
+            user.email,
+            appuser.language,
+            appuser.selectedTopicId,
+            appuser.topics,
+        )
+
         response = Response()
-        
-        response.set_cookie(key='jwt', value=token, httponly=True)
+
+        response.set_cookie(key="jwt", value=token, httponly=True)
         response.data = appuserserializer.data
-        
+
         return response
-    
+
+
 class UserView(APIView):
     def get(self, request):
-        token = request.COOKIES.get('jwt')
-        
+        token = request.COOKIES.get("jwt")
+
         if not token:
             return UnauthenticatedResponse()
-        
-        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-        
-        user = User.objects.filter(id=payload['id']).first()
-        
+
+        payload = jwt.decode(token, "secret", algorithms=["HS256"])
+
+        user = User.objects.filter(id=payload["id"]).first()
+
         if user is None:
             return UserNotFoundResponse()
-        
+
         appuser = AppUser.objects.get(username=user.username)
-        
+
         appuser = AppUser.objects.get(username=user.username)
-        appuserserializer = AppUserSerializer(appuser._id, appuser.username, user.email, appuser.language, appuser.selectedTopicId, appuser.topics)
+        appuserserializer = AppUserSerializer(
+            appuser._id,
+            appuser.username,
+            user.email,
+            appuser.language,
+            appuser.selectedTopicId,
+            appuser.topics,
+        )
         return Response(appuserserializer.data)
-    
+
+
 class LogoutView(APIView):
     def post(self, request):
         response = SuccessResponse()
-        response.delete_cookie('jwt')
+        response.delete_cookie("jwt")
         return response

@@ -7,23 +7,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0001_initial'),
+        ("accounts", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resetpasswordtoken',
-            name='expDate',
-            field=models.DateTimeField(default=datetime.datetime(2022, 1, 6, 11, 38, 6, 834271), editable=False),
+            model_name="resetpasswordtoken",
+            name="expDate",
+            field=models.DateTimeField(
+                default=datetime.datetime(2022, 1, 6, 11, 38, 6, 834271), editable=False
+            ),
         ),
         migrations.AlterField(
-            model_name='resetpasswordtoken',
-            name='userId',
+            model_name="resetpasswordtoken",
+            name="userId",
             field=models.IntegerField(editable=False, unique=True),
         ),
         migrations.AlterField(
-            model_name='resetpasswordtoken',
-            name='uuidToken',
-            field=models.CharField(default='6be0f579-055a-44fd-9799-e72914af4a5f', editable=False, max_length=36, unique=True),
+            model_name="resetpasswordtoken",
+            name="uuidToken",
+            field=models.CharField(
+                default="6be0f579-055a-44fd-9799-e72914af4a5f",
+                editable=False,
+                max_length=36,
+                unique=True,
+            ),
         ),
     ]

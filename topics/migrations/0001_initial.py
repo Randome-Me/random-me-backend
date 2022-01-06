@@ -9,17 +9,29 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='AppUser',
+            name="AppUser",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('username', models.CharField(max_length=255, unique=True)),
-                ('selectedTopicId', models.CharField(max_length=255, null=True)),
-                ('topic', djongo.models.fields.ArrayField(blank=True, model_container=topics.models.Topic)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("username", models.CharField(max_length=255, unique=True)),
+                ("selectedTopicId", models.CharField(max_length=255, null=True)),
+                (
+                    "topic",
+                    djongo.models.fields.ArrayField(
+                        blank=True, model_container=topics.models.Topic
+                    ),
+                ),
             ],
         ),
     ]
