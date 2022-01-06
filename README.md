@@ -12,6 +12,7 @@ Enjoy! [Random Me](https://random-me-frontend.vercel.app/) 🎉
 - Dark mode
 - Internationalization, Thai and English
 - Information on each random policy
+- Mobile friendly
 
 ## 🖥️ Frontend Tech Stack
 
